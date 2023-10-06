@@ -5,12 +5,10 @@ const redirectList = [
 	// append pathnames without domens and protocols
 	// { from: '/pathname-from', to: '/pathname-to' }
 ]
-const langs = {
-  'es': '/es'
+const langs = [
+  'es'
   // other langs add here
-  // name: cur_lang
-}
-const lang_keys = Object.keys(langs)
+]
 
 function removeChains(from, to) {
   let current_from = to
@@ -28,9 +26,9 @@ export default {
 		const url = new URL(request.url)
     let { pathname } = url
     let cur_lang = ''
-    if (lang_keys.includes(pathname.split('/')[1])) {
+    if (langs.includes(pathname.split('/')[1])) {
       cur_lang =  pathname.split('/')[1]
-      pathname = pathname.replace(langs[cur_lang], '')
+      pathname = pathname.replace('/' + cur_lang, '')
 		}
     if (pathname.includes(`/${cur_lang}/sitemap.xml`) ||
         pathname.includes(`/${cur_lang}/${cur_lang}`)) {
@@ -41,7 +39,7 @@ export default {
 
     if (redirect && pathname !== '/') {
       redirect = removeChains(redirect.from, redirect.to)
-      return Response.redirect(url.origin + langs[cur_lang] + redirect.to, 301)
+      return Response.redirect(url.origin + '/' + cur_lang + redirect.to, 301)
     }
 
     if (cur_lang) {
