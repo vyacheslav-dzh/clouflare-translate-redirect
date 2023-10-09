@@ -2,14 +2,15 @@ async function gatherResponse(response) {
 	return response.text()
 }
 function replaceFields(results, lang, host) {
+	let noWWW = (host.startsWith('www') ? host.slice(4) : host);
 	return results
-		.replaceAll('href="/"', `href="/${lang}/"`)
-		.replaceAll(`${lang}.${host}`, `${host}/${lang}/`)
+		.replaceAll('href="/', `href="/${lang}/`)
+		.replaceAll(`${lang}.${noWWW}`, `${host}/${lang}/`)
 		.replaceAll('action="/search"', 'action="/es/search"')
 		.replaceAll(`href="https://${host}/${lang}/"`, `href="https://${host}/${lang}"`)
 		.replaceAll(`href="https://${host}/${lang}//`, `href="https://${host}/${lang}/`)
 		.replaceAll(`href="https://${host}/${lang}/"`, `href="https://${host}/${lang}"`)
-		.replaceAll(`href="https://${lang}.${host}.com/404"`, `href="https://${host}/${lang}/404"`)
+		.replaceAll(`href="https://${lang}.${noWWW}.com/404"`, `href="https://${host}/${lang}/404"`)
 		.replaceAll('<script type="text/javascript" src="https://cdn.weglot.com/weglot.min.js"></script>', '<script>Weglot = {initialize: function() {}}</script>')
 		.replaceAll(`href="/${lang}/"`, `href="/${lang}"`)
 		.replaceAll('?hash=fd2rdx05', '')
@@ -30,17 +31,18 @@ const params = {
 export default {
 	async sampleCheck(url, lang) {
 		let { pathname, host } = url
+		let noWWW = (host.startsWith('www') ? host.slice(4) : host);
 		if (pathname.includes(`/${lang}/sitemap.xml`)) {
 			return Response.redirect(`https://${host}/sitemap.xml`, 301)
 		}
 
 		if (pathname.includes(`/${lang}/${lang}`)) {
-			const translate404 = await fetch(`https://${lang}.${host}/404`, params)
+			const translate404 = await fetch(`https://${lang}.${noWWW}/404`, params)
 			let results404 = await gatherResponse(translate404)
 			results404 = results404
-				.replaceAll(`href="https://${lang}.${host}/404"`, `href="https://${host}/${lang}/404"`)
+				.replaceAll(`href="https://${lang}.${noWWW}/404"`, `href="https://${host}/${lang}/404"`)
 				.replaceAll('action="/search"', `action="/${lang}/search"`)
-			return new Response(replaceFields(results404), {
+			return new Response(replaceFields(results404, lang, host), {
 				status: 404,
 				headers: {
 					"content-type": "text/html"
@@ -59,12 +61,11 @@ export default {
 			},
 		}
 		let { pathname, search, host } = url
-
+		let noWWW = (host.startsWith('www') ? host.slice(4) : host);
 		if (pathname.split('/')[1] === lang) {
 			pathname = pathname.replace('/' + lang + '/', '').replace('/' + lang, '')
 			const hash = search.length ? '&hash=f2dsx03' : '?hash=fd2rdx05'
-			console.log(`https://${lang}.${host}.com/`)
-			const translate = await fetch(`https://${lang}.${host}/` + pathname + search + hash, params)
+			const translate = await fetch(`https://${lang}.${noWWW}/` + pathname + search + hash, params)
 			const results = await gatherResponse(translate)
 			if (translate.status === 404) {
 				params.status = 404
@@ -76,4 +77,3 @@ export default {
 		}
 	}
 }
-
