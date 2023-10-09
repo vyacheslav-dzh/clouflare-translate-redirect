@@ -36,11 +36,11 @@ export default {
     }
 
     let redirect = redirectList.find(x => x.from.replaceAll('/', '') === pathname.replaceAll('/', ''))
-
-    if (redirect && pathname !== '/') {
+    if (redirect && pathname !== '/') { 
       redirect = removeChains(redirect.from, redirect.to)
+      let redirectTo = redirect.to === '/' ? '' : redirect.to
       cur_lang = cur_lang ? '/' + cur_lang : ''
-      return Response.redirect(url.origin + cur_lang + redirect.to, 301)
+      return Response.redirect(url.origin + cur_lang + redirectTo, 301)
     }
 
     if (cur_lang) {
