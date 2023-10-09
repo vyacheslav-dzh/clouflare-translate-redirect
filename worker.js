@@ -39,7 +39,8 @@ export default {
 
     if (redirect && pathname !== '/') {
       redirect = removeChains(redirect.from, redirect.to)
-      return Response.redirect(url.origin + '/' + cur_lang + redirect.to, 301)
+      cur_lang = cur_lang ? '/' + cur_lang : ''
+      return Response.redirect(url.origin + cur_lang + redirect.to, 301)
     }
 
     if (cur_lang) {
