@@ -19,6 +19,14 @@ function replaceFields(results, lang, host) {
 		.replaceAll(`link href="https://${host}/${lang}/"`, `link href="https://${host}/${lang}"`)
 }
 
+const params = {
+  headers: {
+    "content-type": "text/html",
+    "cache-control": "no-cache",
+    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Safari/537.36"
+  },
+}
+
 export default {
 	async sampleCheck(url, lang) {
 		let { pathname, host } = url
